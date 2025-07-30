@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Check if current directory is under user home
+if [[ "$PWD" != "$HOME"* ]]; then
+    echo "Error: Must be run from within user home directory"
+    exit 1
+fi
+
+# Build docker volume arguments
+VOLUME_ARGS=""
+VOLUME_ARGS="$VOLUME_ARGS -v $HOME/.claude:/home/node/.claude"
+VOLUME_ARGS="$VOLUME_ARGS -v $HOME/.claude.json:/home/node/.claude.json"
+
+# Only mount gemini directories if they exist
+if [[ -d $HOME/.config/gemini-cli ]]; then
+    VOLUME_ARGS="$VOLUME_ARGS -v $HOME/.config/gemini-cli:/home/node/.config/gemini-cli"
+fi
+
+if [[ -d $HOME/.gemini ]]; then
+    VOLUME_ARGS="$VOLUME_ARGS -v $HOME/.gemini:/home/node/.gemini"
+fi
+
+VOLUME_ARGS="$VOLUME_ARGS -v $PWD:/home/node/workspace"
+
+docker run --rm -it \
+    --user "1000:1000" \
+    -e GEMINI_API_KEY \
+    $VOLUME_ARGS \
+    claude \
+    sh -c 'cd workspace && claude --dangerously-skip-permissions'

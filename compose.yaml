@@ -1,0 +1,14 @@
+services:
+  claude-code:
+    user: "1000:1000"
+    image: claude
+    build: .
+    volumes:
+      - ~/.claude:/home/node/.claude
+      - ~/.claude.json:/home/node/.claude.json
+      - ~/.config/gemini-cli:/home/node/.config/gemini-cli
+      - ~/.gemini:/home/node/.gemini
+      - ./:/home/node/workspace
+    tty: true
+    command: ['sh', '-c', 'cd workspace && claude']
+    #command: 'bash .claude/claude-loop.sh'
